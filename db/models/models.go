@@ -1,9 +1,10 @@
 package models
 
-import(
+import (
 	"time"
-	"github.com/golang-csrf-project/randomstrings"
+
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/simar/golang-csrf-project/randomstrings"
 )
 type User struct{
 	Username, PasswordHash, Role string
@@ -17,6 +18,6 @@ type TokenClaims struct {
 const RefreshTokenValidTime = time.Hour * 72
 const AuthTokenValidTime = time.Minute * 15
 
-func GenerateCSRFSecret(){string, error}{
-	return randomstring.GenerateRandomString(32)
+func GenerateCSRFSecret()(string, error){
+	return randomstrings.GenerateRandomStrings(32)
 }

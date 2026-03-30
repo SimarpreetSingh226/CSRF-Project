@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/simar/golang-csrf-project/middleware"
+	"github.com/simar/golang-csrf-project/server/middleware"
 )
 
 func StartServer(hosthame string, port string)error{
