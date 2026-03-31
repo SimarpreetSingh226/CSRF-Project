@@ -3,10 +3,13 @@ package middleware
 import (
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/justinas/alice"
-	"github.com/simar/golang-csrf-project/server/middleware/myJwt"
+	"github.com/simar/golang-csrf-project/db"
+	myjwt "github.com/simar/golang-csrf-project/server/middleware/myJwt"
+	"github.com/simar/golang-csrf-project/server/templates"
 )
 
 func NewHandler() http.Handler{
@@ -37,6 +40,8 @@ func authHandler(next http.Handler)http.Handler{
 func logicHandler(w http.ResponseWriter, r * http.Request){
 	switch r.URL.Path{
 	case "/restricted":
+		csrfSecret := grabCsrfFromReq(r)
+		templates.RenderTemplate(w,"restricted",&templates.RestrictedPage{csrfSecret, "Hello Simar"})
 	case "/login":
 		switch r.Method{
 			case "GET":
@@ -46,7 +51,22 @@ func logicHandler(w http.ResponseWriter, r * http.Request){
 		case "/register":
 		switch r.Method {
 			case "GET":
+				templates.RenderTemplate(w,"register",&templates.RegisterPage{false,""})
 			case "POST":
+				r.ParseForm()
+				log.Println(r.Form)
+				_,uuid,err := db.FetchUserByUsername(strings.Join(r.Form["username"],""))
+				if err!=nil{
+					w.WriteHeader(http.StatusUnauthorized)
+				}else{
+					role := "user"
+					uuid,err = db.StoreUser(strings.Join(r.Form["username"],""),strings.Join(r.Form["password"],""),role)
+				}
+				if err!=nil{
+					http.Error(w,http.StatusText(500),500)
+				}
+				log.Panicln("uuid: "+uuid)
+				myjwt.CreateNewTokens()
 			default:
 		}
 	case "/logout":
