@@ -9,7 +9,7 @@ import (
 
 func StartServer(hosthame string, port string)error{
 	host := hosthame + ":" +port
-	log.Println("Listening on: %s",host)
+	log.Printf("Listening on: %s",host)
 	handler := middleware.NewHandler()
 
 	http.Handle("/",handler)
